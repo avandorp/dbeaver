@@ -34,6 +34,7 @@ import org.eclipse.ui.internal.WorkbenchPlugin;
 import org.eclipse.ui.internal.ide.ChooseWorkspaceData;
 import org.eclipse.ui.internal.ide.ChooseWorkspaceDialog;
 import org.jkiss.code.NotNull;
+import org.jkiss.code.Nullable;
 import org.jkiss.dbeaver.DBeaverPreferences;
 import org.jkiss.dbeaver.Log;
 import org.jkiss.dbeaver.model.DBConstants;
@@ -170,6 +171,8 @@ public class DBeaverApplication extends BaseApplicationImpl implements DBPApplic
     public static DBeaverApplication getInstance() {
         return instance;
     }
+
+
 
     @Override
     public long getLastUserActivityTime() {
@@ -401,6 +404,10 @@ public class DBeaverApplication extends BaseApplicationImpl implements DBPApplic
             System.err.println("Unable to save backed up workspaces"); //$NON-NLS-1$
             e.printStackTrace();
         }
+    }
+
+    public @Nullable Path getDefaultWorkingFolder() {
+        return  Path.of(WORKSPACE_DIR_CURRENT);
     }
 
     private String getDefaultInstanceLocation() {
