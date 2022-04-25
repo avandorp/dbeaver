@@ -19,9 +19,7 @@ package org.jkiss.dbeaver.erd.ui.router;
 
 import org.eclipse.draw2dl.*;
 import org.eclipse.draw2dl.LayoutListener.Stub;
-import org.eclipse.draw2dl.geometry.Point;
 import org.eclipse.draw2dl.geometry.PointList;
-import org.eclipse.draw2dl.geometry.PrecisionPoint;
 import org.eclipse.draw2dl.geometry.Rectangle;
 
 import java.util.*;
@@ -62,13 +60,21 @@ public class MikamiTabuchiConnectionRouter extends AbstractRouter {
     }
 
     private void queueRerouting() {
+        if (this.connectionToPaths != null && !this.connectionToPaths.isEmpty()) {
+            try {
+                this.ignoreInvalidate = true;
+                ((Connection)this.connectionToPaths.keySet().iterator().next()).revalidate();
+            } finally {
+                this.ignoreInvalidate = false;
+            }
+
+        }
     }
 
     void addChild(IFigure child) {
         if (this.connectionToPath != null) {
             if (!this.figuresToBounds.containsKey(child)) {
                 Rectangle bounds = child.getBounds().getCopy();
-                child.translateToRelative(container.getBounds());
                 this.algorithm.addObstacle(bounds);
                 this.figuresToBounds.put(child, bounds);
                 child.addFigureListener(this.figureListener);
@@ -103,17 +109,12 @@ public class MikamiTabuchiConnectionRouter extends AbstractRouter {
                 constraint = Collections.EMPTY_LIST;
             }
 
-            Point start = conn.getSourceAnchor().getReferencePoint().getCopy();
-            Point end = conn.getTargetAnchor().getReferencePoint().getCopy();
-            this.container.translateToRelative(start);
-            this.container.translateToRelative(end);
-            path.setStartPoint(start);
-            path.setEndPoint(end);
+            path.setStartPoint(conn.getSourceAnchor().getOwner().getBounds().getCenter());
+            path.setEndPoint(conn.getTargetAnchor().getOwner().getBounds().getCenter());
             if (constraint.isEmpty()) {
                 path.setBendPoints(null);
             } else {
                 PointList bends = new PointList(constraint.size());
-
                 for (Object o : constraint) {
                     Bendpoint bp = (Bendpoint) o;
                     bends.addPoint(bp.getLocation());
@@ -151,16 +152,16 @@ public class MikamiTabuchiConnectionRouter extends AbstractRouter {
                 Connection current = path.getConnection();
                 current.revalidate();
                 PointList points = path.getBendPoints().getCopy();
-                Point ref1 = new PrecisionPoint(points.getPoint(1));
-                Point ref2 = new PrecisionPoint(points.getPoint(points.size() - 2));
-                current.translateToAbsolute(ref1);
-                current.translateToAbsolute(ref2);
-                Point start = current.getSourceAnchor().getLocation(ref1).getCopy();
-                Point end = current.getTargetAnchor().getLocation(ref2).getCopy();
-                current.translateToRelative(start);
-                current.translateToRelative(end);
-                points.setPoint(start, 0);
-                points.setPoint(end, points.size() - 1);
+//                Point ref1 = new PrecisionPoint(points.getPoint(1));
+//                Point ref2 = new PrecisionPoint(points.getPoint(points.size() - 2));
+//                current.translateToAbsolute(ref1);
+//                current.translateToAbsolute(ref2);
+//                Point start = current.getSourceAnchor().getLocation(ref1).getCopy();
+//                Point end = current.getTargetAnchor().getLocation(ref2).getCopy();
+//                current.translateToRelative(start);
+//                current.translateToRelative(end);
+//                points.setPoint(start, 0);
+//                points.setPoint(end, points.size() - 1);
                 current.setPoints(points);
             }
             this.ignoreInvalidate = false;
@@ -205,7 +206,6 @@ public class MikamiTabuchiConnectionRouter extends AbstractRouter {
     void removeChild(IFigure child) {
         if (this.connectionToPath != null) {
             Rectangle bounds = child.getBounds().getCopy();
-            child.translateToRelative(container.getBounds());
             boolean change = this.algorithm.removeObstacle(bounds);
             this.figuresToBounds.remove(child);
             child.removeFigureListener(this.figureListener);
