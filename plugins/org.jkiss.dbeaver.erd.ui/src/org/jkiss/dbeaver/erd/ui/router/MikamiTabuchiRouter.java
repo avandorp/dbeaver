@@ -322,8 +322,8 @@ public class MikamiTabuchiRouter {
                         cut(it);
                     }
                 }
-                if (vertical && it.getLeft().x <= from.x && it.getRight().x > from.x
-                    || !vertical && it.getTop().y <= from.y && it.getBottom().y > from.y) {
+                if (vertical && it.getLeft().x - spacing <= from.x && it.getRight().x + spacing > from.x
+                    || !vertical && it.getTop().y - spacing <= from.y && it.getBottom().y + spacing > from.y) {
                     //object is below need to cut start
                     cut(it);
                 }
