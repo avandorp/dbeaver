@@ -49,7 +49,7 @@ public class MikamiTabuchiRouter {
     private final List<OrthogonalPath> userPaths = new ArrayList<>();
 
     //Increase for performance, increasing this parameter lowers accuracy.
-    private static final int STEP_SIZE = 4;
+    private static final int STEP_SIZE = 1;
 
     private static final int SOURCE_VERTICAL_LINES = 0;
     private static final int SOURCE_HORIZONTAL_LINES = 1;
@@ -342,8 +342,8 @@ public class MikamiTabuchiRouter {
 
         private void cut(Rectangle bound) {
             int fromPosition = vertical ? from.y : from.x;
-            int startPoint = vertical ? bound.getBottom().y : bound.getLeft().x;
-            int endPoint = vertical ? bound.getTop().y : bound.getRight().x;
+            int startPoint = vertical ? bound.getTop().y : bound.getLeft().x;
+            int endPoint = vertical ? bound.getBottom().y : bound.getRight().x;
             if (fromPosition > endPoint) {
                 if (start == Integer.MIN_VALUE || start < endPoint + spacing) {
                     start = endPoint + spacing;
@@ -369,8 +369,8 @@ public class MikamiTabuchiRouter {
         }
 
         private boolean intersect(TrialLine line) {
-            int firstLinePos = vertical ? from.y : from.x;
-            int secondLinePos = vertical ? line.from.x : line.from.y;
+            int firstLinePos = vertical ? from.x : from.y;
+            int secondLinePos = vertical ? line.from.y : line.from.x;
 
             return firstLinePos >= line.start && firstLinePos < line.finish && secondLinePos >= start && secondLinePos < finish;
         }
